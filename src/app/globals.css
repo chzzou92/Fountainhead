@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Screenwriting Navigation Bar */
+.screenwriting-navbar {
+  background: #ffffff;
+  padding: 6px 12px;
+  display: flex;
+  justify-content: space-evenly;
+  gap: 0;
+  align-items: center;
+  border-bottom: 1px solid #e0e0e0;
+  overflow-x: auto;
+}
+
+.screenwriting-nav-btn {
+  background: transparent;
+  border: none;
+  color: #000000;
+  padding: 6px 12px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+  min-width: 60px;
+  transition: all 0.2s ease;
+  position: relative;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+
+.screenwriting-nav-btn:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.04);
+  color: #000000;
+}
+
+.screenwriting-nav-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  color: #999999;
+}
+
+.screenwriting-nav-btn.active {
+  color: #1976d2;
+  background: rgba(25, 118, 210, 0.08);
+}
+
+.screenwriting-nav-btn.active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 2px;
+  background: #4a9eff;
+}
+
+.screenwriting-icon {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Page Container Styles */
+.page-container-wrapper {
+  position: relative;
+  background: #e5e5e5;
+  padding: 20px 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.page-content-area {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 8.5in;
+  padding-top: 20px; /* Match container padding */
+}
+
+.page-overlay {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 0;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  width: 8.5in;
+  max-width: calc(100% - 40px);
+  margin-bottom: 40px;
+}
+
+.page-number {
+  position: absolute;
+  top: 0.5in;
+  right: 1in;
+  font-family: 'Courier, "Courier New", monospace';
+  font-size: 12pt;
+  color: #000000;
+  pointer-events: none;
+  font-weight: normal;
+}
+
