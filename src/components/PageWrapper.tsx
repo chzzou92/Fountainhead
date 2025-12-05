@@ -38,13 +38,13 @@ export function PageWrapper({ children }: { children: React.ReactNode }) {
         const clientHeight = editableElement.clientHeight;
         const offsetHeight = editableElement.offsetHeight;
 
-        console.log("PageWrapper Debug:", {
-          contentHeight,
-          clientHeight,
-          offsetHeight,
-          PAGE_CONTENT_HEIGHT,
-          calculatedPages: Math.ceil(contentHeight / PAGE_CONTENT_HEIGHT),
-        });
+        // console.log("PageWrapper Debug:", {
+        //   contentHeight,
+        //   clientHeight,
+        //   offsetHeight,
+        //   PAGE_CONTENT_HEIGHT,
+        //   calculatedPages: Math.ceil(contentHeight / PAGE_CONTENT_HEIGHT),
+        // });
 
         // The content area has 1" top padding (96px), so actual content starts after that
         // We measure from the scrollHeight which includes all content
@@ -54,7 +54,7 @@ export function PageWrapper({ children }: { children: React.ReactNode }) {
           Math.ceil(contentHeight / PAGE_CONTENT_HEIGHT)
         );
 
-        console.log("PageWrapper: Setting page count to", pages);
+        // console.log("PageWrapper: Setting page count to", pages);
         setPageCount(pages);
       }, 300);
     };

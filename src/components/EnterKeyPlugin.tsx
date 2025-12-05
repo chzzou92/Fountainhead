@@ -112,9 +112,138 @@ export function EnterKeyPlugin() {
           const isAtEnd = offset >= textContent.length;
 
           if (isAtEnd) {
-            // Simple case: just insert new node after
+            // Check current node position first to determine if we need page break
+            const editorElement = editor.getRootElement();
+            let marginNeeded = 0;
+            let needsPageBreak = false;
+
+            if (editorElement) {
+              const editableArea = editorElement.querySelector(
+                '[contenteditable="true"]'
+              ) as HTMLElement;
+
+              if (editableArea) {
+                // Get cursor position
+                const selection = window.getSelection();
+                let cursorBottom = 0;
+
+                if (selection && selection.rangeCount > 0) {
+                  const range = selection.getRangeAt(0);
+                  const cursorRect = range.getBoundingClientRect();
+                  const editableRect = editableArea.getBoundingClientRect();
+                  const topPadding = 96; // 1" top margin
+                  cursorBottom =
+                    cursorRect.bottom - editableRect.top - topPadding;
+                }
+
+                // Find the current node (topLevelNode) in the DOM
+                const allBlocks = Array.from(
+                  editableArea.querySelectorAll(
+                    "p, div[data-lexical-editor] > div > div"
+                  )
+                ) as HTMLElement[];
+
+                // Get the actual text bottom position (not just block bottom with whitespace)
+                // Check the last few blocks to find the current one
+                let textBottom = 0;
+                for (
+                  let i = allBlocks.length - 1;
+                  i >= Math.max(0, allBlocks.length - 5);
+                  i--
+                ) {
+                  const block = allBlocks[i];
+
+                  // Get the actual text content bottom by finding text nodes
+                  const textContent = block.textContent?.trim();
+                  if (textContent && textContent.length > 0) {
+                    // Use Range API to get the actual end of text content
+                    const range = document.createRange();
+
+                    // Find all text nodes in the block
+                    const walker = document.createTreeWalker(
+                      block,
+                      NodeFilter.SHOW_TEXT,
+                      null
+                    );
+
+                    const textNodes: Node[] = [];
+                    let node;
+                    while ((node = walker.nextNode())) {
+                      if (node.textContent?.trim()) {
+                        textNodes.push(node);
+                      }
+                    }
+
+                    if (textNodes.length > 0) {
+                      // Use the last text node to get the actual text bottom
+                      const lastTextNode = textNodes[textNodes.length - 1];
+                      range.selectNodeContents(lastTextNode);
+                      range.collapse(false); // Collapse to end of text
+                      const textRect = range.getBoundingClientRect();
+                      const editableRect = editableArea.getBoundingClientRect();
+                      const topPadding = 96;
+                      const nodeTextBottom =
+                        textRect.bottom - editableRect.top - topPadding;
+                      textBottom = Math.max(textBottom, nodeTextBottom);
+                    } else {
+                      // Fallback: use block's bottom if no text nodes found
+                      const blockRect = block.getBoundingClientRect();
+                      const editableRect = editableArea.getBoundingClientRect();
+                      const topPadding = 96;
+                      textBottom = Math.max(
+                        textBottom,
+                        blockRect.bottom - editableRect.top - topPadding
+                      );
+                    }
+                  }
+                }
+
+                // Use whichever is lower: cursor position or text bottom
+                const bottomPosition = Math.max(cursorBottom, textBottom);
+
+                // Check if this position would overflow into bottom margin
+                const currentPageContentHeight = bottomPosition % 864;
+                const estimatedLineHeight = 24;
+
+                // If position + new line would exceed page content height (864px)
+                if (currentPageContentHeight + estimatedLineHeight > 864) {
+                  needsPageBreak = true;
+                  // Calculate margin to push new node to start of next page
+                  const currentPage = Math.floor(bottomPosition / 864);
+                  const nextPageStart = (currentPage + 1) * 864;
+                  // Margin needed = next page start - current position
+                  marginNeeded = nextPageStart - currentPageContentHeight;
+                }
+              }
+            }
+
+            // Create new node
             const newNode = createNextNode();
             topLevelNode.insertAfter(newNode);
+
+            // Apply page break margin if needed
+            if (needsPageBreak && marginNeeded > 0) {
+              // Use setTimeout to apply margin after DOM updates
+              setTimeout(() => {
+                const editorElement = editor.getRootElement();
+                if (!editorElement) return;
+
+                const editableArea = editorElement.querySelector(
+                  '[contenteditable="true"]'
+                ) as HTMLElement;
+                if (!editableArea) return;
+
+                // Find the newly created node (should be the last block)
+                const allBlocks = editableArea.querySelectorAll(
+                  "p, div[data-lexical-editor] > div > div"
+                );
+                const newBlock = allBlocks[allBlocks.length - 1] as HTMLElement;
+                if (newBlock) {
+                  newBlock.style.marginTop = `${marginNeeded}px`;
+                }
+              }, 50);
+            }
+
             newNode.selectStart();
           } else if (isParenthetical) {
             // Special handling for parenthetical: keep closing paren on same line
