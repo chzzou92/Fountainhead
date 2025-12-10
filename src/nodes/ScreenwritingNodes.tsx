@@ -7,6 +7,7 @@ import {
   NodeKey,
   ParagraphNode,
   SerializedLexicalNode,
+  SerializedParagraphNode,
   Spread,
 } from "lexical";
 import { ReactNode } from "react";
@@ -30,7 +31,7 @@ export class SceneHeadingNode extends ParagraphNode {
 
   createDOM(config: EditorConfig): HTMLElement {
     const element = super.createDOM(config);
-    element.className = "mb-2";
+    element.className = "mb-4";
     element.style.fontWeight = "bold";
     element.style.textTransform = "uppercase";
     element.style.marginLeft = "0";
@@ -43,7 +44,7 @@ export class SceneHeadingNode extends ParagraphNode {
     return false;
   }
 
-  static importJSON(serializedNode: SerializedLexicalNode): SceneHeadingNode {
+  static importJSON(serializedNode: SerializedParagraphNode): SceneHeadingNode {
     const node = $createSceneHeadingNode();
     node.setFormat(serializedNode.format);
     node.setIndent(serializedNode.indent);
@@ -67,7 +68,7 @@ export class ActionNode extends ParagraphNode {
 
   createDOM(config: EditorConfig): HTMLElement {
     const element = super.createDOM(config);
-    element.className = "mb-2";
+    element.className = "mb-4";
     element.style.marginLeft = "0";
     element.style.marginRight = "0";
     element.style.paddingLeft = "0";
@@ -80,7 +81,7 @@ export class ActionNode extends ParagraphNode {
     return false;
   }
 
-  static importJSON(serializedNode: SerializedLexicalNode): ActionNode {
+  static importJSON(serializedNode: SerializedParagraphNode): ActionNode {
     const node = $createActionNode();
     node.setFormat(serializedNode.format);
     node.setIndent(serializedNode.indent);
@@ -116,7 +117,7 @@ export class CharacterNode extends ParagraphNode {
     return false;
   }
 
-  static importJSON(serializedNode: SerializedLexicalNode): CharacterNode {
+  static importJSON(serializedNode: SerializedParagraphNode): CharacterNode {
     const node = $createCharacterNode();
     node.setFormat(serializedNode.format);
     node.setIndent(serializedNode.indent);
@@ -140,7 +141,7 @@ export class DialogueNode extends ParagraphNode {
 
   createDOM(config: EditorConfig): HTMLElement {
     const element = super.createDOM(config);
-    element.className = "mb-2";
+    element.className = "mb-4";
     // Dialogue is 1 inch from the pre-existing 1.5" margin = 2.5" total from page left
     element.style.marginLeft = "1in";
     element.style.marginRight = "2in";
@@ -152,7 +153,7 @@ export class DialogueNode extends ParagraphNode {
     return false;
   }
 
-  static importJSON(serializedNode: SerializedLexicalNode): DialogueNode {
+  static importJSON(serializedNode: SerializedParagraphNode): DialogueNode {
     const node = $createDialogueNode();
     node.setFormat(serializedNode.format);
     node.setIndent(serializedNode.indent);
@@ -188,7 +189,9 @@ export class ParentheticalNode extends ParagraphNode {
     return false;
   }
 
-  static importJSON(serializedNode: SerializedLexicalNode): ParentheticalNode {
+  static importJSON(
+    serializedNode: SerializedParagraphNode
+  ): ParentheticalNode {
     const node = $createParentheticalNode();
     node.setFormat(serializedNode.format);
     node.setIndent(serializedNode.indent);
@@ -212,7 +215,7 @@ export class TransitionNode extends ParagraphNode {
 
   createDOM(config: EditorConfig): HTMLElement {
     const element = super.createDOM(config);
-    element.className = "mb-2";
+    element.className = "mb-4";
     element.style.textTransform = "uppercase";
     element.style.textAlign = "right";
     // Start at right margin (1" from page right = 7.5" from page left)
@@ -232,7 +235,7 @@ export class TransitionNode extends ParagraphNode {
     return false;
   }
 
-  static importJSON(serializedNode: SerializedLexicalNode): TransitionNode {
+  static importJSON(serializedNode: SerializedParagraphNode): TransitionNode {
     const node = $createTransitionNode();
     node.setFormat(serializedNode.format);
     node.setIndent(serializedNode.indent);
@@ -243,4 +246,59 @@ export class TransitionNode extends ParagraphNode {
 
 export function $createTransitionNode(): TransitionNode {
   return $applyNodeReplacement(new TransitionNode());
+}
+
+export class PageBreakSpacerNode extends ParagraphNode {
+  static getType(): string {
+    return "page-break-spacer";
+  }
+
+  static clone(node: PageBreakSpacerNode): PageBreakSpacerNode {
+    return new PageBreakSpacerNode(node.__key);
+  }
+
+  createDOM(config: EditorConfig): HTMLElement {
+    const element = super.createDOM(config);
+    // 96px bottom margin + 96px top margin + 40px spacing = 232px total
+    element.style.height = "232px";
+    element.style.margin = "0";
+    element.style.padding = "0";
+    element.style.border = "none";
+    element.style.outline = "none";
+    element.style.pointerEvents = "none";
+    element.style.userSelect = "none";
+    element.setAttribute("contenteditable", "false");
+    return element;
+  }
+
+  updateDOM(prevNode: PageBreakSpacerNode, dom: HTMLElement): boolean {
+    return false;
+  }
+
+  static importJSON(
+    serializedNode: SerializedParagraphNode
+  ): PageBreakSpacerNode {
+    const node = $createPageBreakSpacerNode();
+    node.setFormat(serializedNode.format);
+    node.setIndent(serializedNode.indent);
+    node.setDirection(serializedNode.direction);
+    return node;
+  }
+
+  // Prevent selection and editing
+  isInline(): boolean {
+    return false;
+  }
+
+  canInsertTextBefore(): boolean {
+    return false;
+  }
+
+  canInsertTextAfter(): boolean {
+    return false;
+  }
+}
+
+export function $createPageBreakSpacerNode(): PageBreakSpacerNode {
+  return $applyNodeReplacement(new PageBreakSpacerNode());
 }

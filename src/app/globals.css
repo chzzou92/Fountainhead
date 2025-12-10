@@ -94,6 +94,7 @@ body {
   background: #e5e5e5;
   padding: 20px 0;
   min-height: 100vh;
+  height: auto; 
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -104,7 +105,7 @@ body {
   z-index: 1;
   width: 100%;
   max-width: 8.5in;
-  padding-top: 20px; /* Match container padding */
+  padding-top: 96px; /* Match container padding */
 }
 
 .page-overlay {
@@ -117,7 +118,7 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   width: 8.5in;
   max-width: calc(100% - 40px);
-  margin-bottom: 40px;
+
 }
 
 .page-number {

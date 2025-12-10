@@ -17,15 +17,17 @@ import {
   DialogueNode,
   ParentheticalNode,
   TransitionNode,
+  PageBreakSpacerNode,
 } from "@/nodes/ScreenwritingNodes";
 import ScreenwritingToolbar from "./ScreenwritingToolbar";
 import { UppercasePlugin } from "./UppercasePlugin";
 import { EnterKeyPlugin } from "./EnterKeyPlugin";
 import { FormatProvider } from "@/contexts/FormatContext";
 import { PageWrapper } from "./PageWrapper";
+import { PageBreakSpacerPlugin } from "./PageBreakSpacerPlugin";
 
 const theme = {
-  paragraph: "mb-2",
+  paragraph: "mb-4",
 };
 
 function OnChangePlugin({
@@ -55,6 +57,7 @@ const initialConfig = {
     DialogueNode,
     ParentheticalNode,
     TransitionNode,
+    PageBreakSpacerNode,
   ],
 };
 
@@ -82,8 +85,6 @@ export default function LexicalEditor() {
                 fontSize: "12pt",
                 lineHeight: "1.2",
                 color: "#000000",
-                paddingTop: "1in",
-                paddingBottom: "1in",
                 marginLeft: "1.5in",
                 marginRight: "1in",
                 paddingLeft: "0",
@@ -112,7 +113,7 @@ export default function LexicalEditor() {
                     style={{
                       fontFamily: 'Courier, "Courier New", monospace',
                       fontSize: "12pt",
-                      top: "1in",
+                      top: "0in",
                     }}
                   >
                     Start typing...
@@ -125,6 +126,7 @@ export default function LexicalEditor() {
               <UppercasePlugin />
               <EnterKeyPlugin />
               <OnChangePlugin onChange={onChange} />
+              <PageBreakSpacerPlugin />
             </div>
           </PageWrapper>
         </div>

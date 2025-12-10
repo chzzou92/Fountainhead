@@ -12,6 +12,7 @@ const PAGE_SPACING = 40; // Space between pages
 
 export function PageWrapper({ children }: { children: React.ReactNode }) {
   const contentRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const [pageCount, setPageCount] = useState(1);
 
   useEffect(() => {
@@ -56,6 +57,18 @@ export function PageWrapper({ children }: { children: React.ReactNode }) {
 
         // console.log("PageWrapper: Setting page count to", pages);
         setPageCount(pages);
+
+        // Calculate total height needed for all page overlays
+        // Last page position + page height
+        const lastPageTop =
+          (pages - 1) * (PAGE_CONTENT_HEIGHT + 192 + PAGE_SPACING) + 20;
+        const lastPageHeight = PAGE_CONTENT_HEIGHT + 192;
+        const totalHeight = lastPageTop + lastPageHeight + 20; // Add some padding at bottom
+
+        // Set min-height on wrapper to contain all overlays
+        if (wrapperRef.current) {
+          wrapperRef.current.style.minHeight = `${totalHeight}px`;
+        }
       }, 300);
     };
 
@@ -85,7 +98,7 @@ export function PageWrapper({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="page-container-wrapper">
+    <div ref={wrapperRef} className="page-container-wrapper">
       <div ref={contentRef} className="page-content-area">
         {children}
       </div>
@@ -94,18 +107,11 @@ export function PageWrapper({ children }: { children: React.ReactNode }) {
       {Array.from({ length: pageCount }).map((_, index) => {
         // Page numbers start from page 3 (index 2), so page 1 and 2 don't have numbers
         const pageNumber = index + 1;
-        const shouldShowPageNumber = pageNumber > 2;
+        const shouldShowPageNumber = pageNumber > 1;
 
         // Calculate position: each page is PAGE_CONTENT_HEIGHT (864px) + 1" top (96px) + 1" bottom (96px) = 1056px
         // Plus spacing between pages
         const pageTop = index * (PAGE_CONTENT_HEIGHT + 192 + PAGE_SPACING) + 20; // 20px = container padding
-
-        console.log(`PageWrapper: Rendering page ${pageNumber}`, {
-          index,
-          pageTop,
-          shouldShowPageNumber,
-          height: PAGE_CONTENT_HEIGHT + 192,
-        });
 
         return (
           <div
@@ -117,24 +123,17 @@ export function PageWrapper({ children }: { children: React.ReactNode }) {
             }}
           >
             {shouldShowPageNumber && (
-              <div className="page-number">{pageNumber}</div>
+              <div
+                className="page-number"
+                style={{
+                  fontFamily: 'Courier, "Courier New", monospace',
+                  fontSize: "12pt",
+                  color: "#000000",
+                }}
+              >
+                {pageNumber}.
+              </div>
             )}
-            {/* Debug indicator - remove after debugging */}
-            <div
-              style={{
-                position: "absolute",
-                top: "0",
-                left: "0",
-                fontSize: "10px",
-                color: "#999",
-                padding: "2px 4px",
-                background: "rgba(255,255,255,0.8)",
-                zIndex: 10,
-              }}
-            >
-              Page {pageNumber}{" "}
-              {shouldShowPageNumber ? "(numbered)" : "(no number)"}
-            </div>
           </div>
         );
       })}
