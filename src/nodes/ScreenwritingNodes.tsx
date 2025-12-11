@@ -105,7 +105,7 @@ export class CharacterNode extends ParagraphNode {
 
   createDOM(config: EditorConfig): HTMLElement {
     const element = super.createDOM(config);
-    element.className = "mb-1 mt-4";
+    element.className = "1 mt-4";
     element.style.textTransform = "uppercase";
     element.style.marginLeft = "2.2in";
     element.style.marginRight = "0";
@@ -215,7 +215,7 @@ export class TransitionNode extends ParagraphNode {
 
   createDOM(config: EditorConfig): HTMLElement {
     const element = super.createDOM(config);
-    element.className = "mb-4";
+    element.className = "mb-4 ";
     element.style.textTransform = "uppercase";
     element.style.textAlign = "right";
     // Start at right margin (1" from page right = 7.5" from page left)
@@ -249,18 +249,31 @@ export function $createTransitionNode(): TransitionNode {
 }
 
 export class PageBreakSpacerNode extends ParagraphNode {
+  __offsetSpacing: number;
+
+  constructor(key?: NodeKey, offsetSpacing: number = 0) {
+    super(key);
+    this.__offsetSpacing = offsetSpacing;
+  }
+
   static getType(): string {
     return "page-break-spacer";
   }
 
   static clone(node: PageBreakSpacerNode): PageBreakSpacerNode {
-    return new PageBreakSpacerNode(node.__key);
+    return new PageBreakSpacerNode(node.__key, node.__offsetSpacing);
+  }
+
+  getOffsetSpacing(): number {
+    return this.__offsetSpacing;
   }
 
   createDOM(config: EditorConfig): HTMLElement {
     const element = super.createDOM(config);
     // 96px bottom margin + 96px top margin + 40px spacing = 232px total
-    element.style.height = "232px";
+    // Add offsetSpacing to adjust height
+    const totalHeight = 232 + this.__offsetSpacing;
+    element.style.height = `${totalHeight}px`;
     element.style.margin = "0";
     element.style.padding = "0";
     element.style.border = "none";
@@ -272,6 +285,12 @@ export class PageBreakSpacerNode extends ParagraphNode {
   }
 
   updateDOM(prevNode: PageBreakSpacerNode, dom: HTMLElement): boolean {
+    // Update height if offsetSpacing changed
+    if (prevNode.__offsetSpacing !== this.__offsetSpacing) {
+      const totalHeight = 232 + this.__offsetSpacing;
+      dom.style.height = `${totalHeight}px`;
+      return true;
+    }
     return false;
   }
 
@@ -299,6 +318,10 @@ export class PageBreakSpacerNode extends ParagraphNode {
   }
 }
 
-export function $createPageBreakSpacerNode(): PageBreakSpacerNode {
-  return $applyNodeReplacement(new PageBreakSpacerNode());
+export function $createPageBreakSpacerNode(
+  offsetSpacing: number = 0
+): PageBreakSpacerNode {
+  return $applyNodeReplacement(
+    new PageBreakSpacerNode(undefined, offsetSpacing)
+  );
 }

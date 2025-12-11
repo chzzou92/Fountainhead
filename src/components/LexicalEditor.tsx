@@ -27,7 +27,7 @@ import { PageWrapper } from "./PageWrapper";
 import { PageBreakSpacerPlugin } from "./PageBreakSpacerPlugin";
 
 const theme = {
-  paragraph: "mb-4",
+  paragraph: "mb-4 ",
 };
 
 function OnChangePlugin({
@@ -100,7 +100,7 @@ export default function LexicalEditor() {
                     style={{
                       fontFamily: 'Courier, "Courier New", monospace',
                       fontSize: "12pt",
-                      lineHeight: "1.2",
+                      lineHeight: "1",
                       color: "#000000",
                       padding: "0",
                       margin: "0",

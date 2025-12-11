@@ -82,13 +82,22 @@ export function PageBreakSpacerPlugin() {
             const insertPositions: number[] = [];
 
             nodeHeights.forEach((item, index) => {
-            console.log("currentPageHeight", currentPageHeight, "item.height", item.height, "total", currentPageHeight + item.height);
+              // console.log(
+              //   "currentPageHeight",
+              //   currentPageHeight,
+              //   "item.height",
+              //   item.height,
+              //   "total",
+              //   currentPageHeight + item.height
+              // );
               const wouldExceed =
-                currentPageHeight + item.height > PAGE_CONTENT_HEIGHT + PAGE_MARGIN_TOP + 16;
+                currentPageHeight + item.height >
+                PAGE_CONTENT_HEIGHT + PAGE_MARGIN_TOP;
 
               if (wouldExceed && currentPageHeight > PAGE_MARGIN_TOP) {
                 // We need a page break before this node
-                insertPositions.push(index);
+                insertPositions.push(index - 1);
+                console.log("Pos: ", index - 1);
                 // Start new page (spacer will add the margins)
                 currentPageHeight = PAGE_MARGIN_TOP + item.height;
               } else {
@@ -135,15 +144,32 @@ export function PageBreakSpacerPlugin() {
 
                 // Insert spacers in reverse order to maintain correct indices
                 const insertedSpacers: PageBreakSpacerNode[] = [];
-                for (let i = insertPositions.length - 1; i >= 0; i--) {
-                  const insertIndex = insertPositions[i];
-                  if (insertIndex < nodes.length) {
-                    const targetNode = nodes[insertIndex];
-                    const spacer = $createPageBreakSpacerNode();
+                let j = 0;
+                let currentHeight = PAGE_MARGIN_TOP;
+
+                nodeHeights.forEach((item, index) => {
+                  if (j >= insertPositions.length) return;
+                  console.log("Index: ", index, ", Height: ", currentHeight);
+                  const insertIndex = insertPositions[j];
+                  if (index == insertIndex) {
+                    currentHeight += item.height;
+                    const targetNode = nodes[insertIndex + 1];
+                    const spacer = $createPageBreakSpacerNode(
+                      PAGE_CONTENT_HEIGHT + PAGE_MARGIN_TOP - currentHeight
+                    );
                     targetNode.insertBefore(spacer);
                     insertedSpacers.push(spacer);
+                  } else {
+                    currentHeight += item.height;
                   }
-                }
+
+                  if (
+                    currentHeight + item.height >
+                    PAGE_CONTENT_HEIGHT + PAGE_MARGIN_TOP
+                  ) {
+                    currentHeight = PAGE_MARGIN_TOP + item.height;
+                  }
+                });
 
                 // Update the ref with new spacer keys
                 lastSpacerKeysRef.current = insertedSpacers
@@ -190,8 +216,6 @@ export function PageBreakSpacerPlugin() {
         updatePageBreaks();
       }
     );
-
-    
 
     return () => {
       if (updateTimeout) {
