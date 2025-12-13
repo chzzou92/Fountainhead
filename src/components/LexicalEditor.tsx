@@ -24,6 +24,7 @@ import ScreenwritingToolbar from "./ScreenwritingToolbar";
 import { UppercasePlugin } from "./UppercasePlugin";
 import { EnterKeyPlugin } from "./EnterKeyPlugin";
 import { FormatProvider } from "@/contexts/FormatContext";
+import { KeyboardShortcutsPlugin } from "@/contexts/KeyboardShortcutsPlugin";
 import { PageWrapper } from "./PageWrapper";
 import { PageBreakSpacerPlugin } from "./PageBreakSpacerPlugin";
 
@@ -109,18 +110,6 @@ export default function LexicalEditor() {
                     }}
                   />
                 }
-                placeholder={
-                  <div
-                    className="absolute text-gray-400 pointer-events-none"
-                    style={{
-                      fontFamily: 'Courier, "Courier New", monospace',
-                      fontSize: "12pt",
-                      top: "0in",
-                    }}
-                  >
-                    Start typing...
-                  </div>
-                }
                 ErrorBoundary={LexicalErrorBoundary}
               />
               <HistoryPlugin />
@@ -129,6 +118,7 @@ export default function LexicalEditor() {
               <EnterKeyPlugin />
               <OnChangePlugin onChange={onChange} />
               <PageBreakSpacerPlugin />
+              <KeyboardShortcutsPlugin />
             </div>
           </PageWrapper>
         </div>
