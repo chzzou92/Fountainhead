@@ -16,6 +16,7 @@ import {
   $createDialogueNode,
   $createParentheticalNode,
   $createTransitionNode,
+  $createShotNode,
   SceneHeadingNode,
   ActionNode,
   CharacterNode,
@@ -39,6 +40,7 @@ export default function ScreenwritingToolbar() {
       | "dialogue"
       | "parenthetical"
       | "transition"
+      | "shot"
   ) => {
     editor.update(() => {
       const selection = $getSelection();
@@ -122,6 +124,8 @@ export default function ScreenwritingToolbar() {
           case "transition":
             newNode = $createTransitionNode();
             break;
+          case "shot":
+            newNode = $createShotNode();
         }
         if (lastChild) {
           lastChild.insertAfter(newNode);
@@ -168,6 +172,9 @@ export default function ScreenwritingToolbar() {
             break;
           case "transition":
             createNode = $createTransitionNode;
+            break;
+          case "shot":
+            createNode = $createShotNode;
             break;
         }
 
@@ -258,6 +265,7 @@ export default function ScreenwritingToolbar() {
           </svg>
           <span>Dialogue</span>
         </button>
+
         <button
           onClick={() => formatBlock("transition")}
           className={`screenwriting-nav-btn ${
@@ -269,13 +277,20 @@ export default function ScreenwritingToolbar() {
           </svg>
           <span>Transition</span>
         </button>
-        <button className="screenwriting-nav-btn" disabled>
+
+        <button
+          className={`screenwriting-nav-btn ${
+            activeFormat === "shot" ? "active" : ""
+          }`}
+          onClick={() => formatBlock("shot")}
+        >
           <svg className="screenwriting-icon" viewBox="0 0 24 24">
             <rect x="2" y="4" width="20" height="16" rx="2" />
             <circle cx="12" cy="12" r="3" />
           </svg>
           <span>Shot</span>
         </button>
+
         <button className="screenwriting-nav-btn" disabled>
           <svg className="screenwriting-icon" viewBox="0 0 24 24">
             <path d="M12 20h9" />
@@ -283,15 +298,8 @@ export default function ScreenwritingToolbar() {
           </svg>
           <span>Note</span>
         </button>
-        <button className="screenwriting-nav-btn" disabled>
-          <svg className="screenwriting-icon" viewBox="0 0 24 24">
-            <rect x="3" y="3" width="7" height="7" />
-            <rect x="14" y="3" width="7" height="7" />
-            <rect x="14" y="14" width="7" height="7" />
-            <rect x="3" y="14" width="7" height="7" />
-          </svg>
-          <span>Sequence</span>
-        </button>
+
+
         <button className="screenwriting-nav-btn" disabled>
           <svg className="screenwriting-icon" viewBox="0 0 24 24">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />

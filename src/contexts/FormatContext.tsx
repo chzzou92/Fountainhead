@@ -9,6 +9,7 @@ type FormatType =
   | "dialogue"
   | "parenthetical"
   | "transition"
+  | "shot"
   | null;
 
 interface FormatContextType {

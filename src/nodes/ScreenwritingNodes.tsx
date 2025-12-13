@@ -17,6 +17,7 @@ export type ScreenwritingElementType =
   | "action"
   | "character"
   | "dialogue"
+  | "shot"
   | "parenthetical"
   | "transition";
 
@@ -324,4 +325,43 @@ export function $createPageBreakSpacerNode(
   return $applyNodeReplacement(
     new PageBreakSpacerNode(undefined, offsetSpacing)
   );
+}
+
+
+export class ShotNode extends ParagraphNode {
+  static getType(): string {
+    return "shot";
+  }
+
+  static clone(node: ShotNode): ShotNode {
+    return new ShotNode(node.__key);
+  }
+
+  createDOM(config: EditorConfig): HTMLElement {
+    const element = super.createDOM(config);
+    element.className = "mb-4";
+    element.style.marginLeft = "0";
+    element.style.marginRight = "0";
+    element.style.paddingLeft = "0";
+    element.style.textTransform = "uppercase";
+    element.style.paddingRight = "0";
+    element.style.color = "#000000";
+    return element;
+  }
+
+  updateDOM(prevNode: ShotNode, dom: HTMLElement): boolean {
+    return false;
+  }
+
+  static importJSON(serializedNode: SerializedParagraphNode): ShotNode {
+    const node = $createShotNode();
+    node.setFormat(serializedNode.format);
+    node.setIndent(serializedNode.indent);
+    node.setDirection(serializedNode.direction);
+    return node;
+  }
+}
+
+export function $createShotNode(): ShotNode {
+  return $applyNodeReplacement(new ShotNode());
 }

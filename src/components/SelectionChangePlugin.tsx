@@ -10,6 +10,7 @@ import {
   DialogueNode,
   ParentheticalNode,
   TransitionNode,
+  ShotNode
 } from "@/nodes/ScreenwritingNodes";
 import { useFormat } from "@/contexts/FormatContext";
 
@@ -82,12 +83,17 @@ export function SelectionChangePlugin() {
             topLevelNode instanceof TransitionNode
           ) {
             setActiveFormat("transition");
+          } else if (
+            nodeType === "shot" ||
+            topLevelNode instanceof ShotNode
+          ) {
+            setActiveFormat("shot");
           } else {
             // Default to "action" for unknown node types, so one button is always highlighted
             setActiveFormat("action");
           }
         });
-      }, 100); // Delay to let EnterKeyPlugin set format first
+      }, 50); // Delay to let EnterKeyPlugin set format first
     });
   }, [editor, setActiveFormat]);
 

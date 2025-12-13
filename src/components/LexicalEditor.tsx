@@ -18,6 +18,7 @@ import {
   ParentheticalNode,
   TransitionNode,
   PageBreakSpacerNode,
+  ShotNode
 } from "@/nodes/ScreenwritingNodes";
 import ScreenwritingToolbar from "./ScreenwritingToolbar";
 import { UppercasePlugin } from "./UppercasePlugin";
@@ -58,6 +59,7 @@ const initialConfig = {
     ParentheticalNode,
     TransitionNode,
     PageBreakSpacerNode,
+    ShotNode
   ],
 };
 
